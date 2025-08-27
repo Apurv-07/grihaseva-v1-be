@@ -16,6 +16,8 @@ export const getAllEmployees = async (req, res) => {
       ...queryBuilder,
       $or: [{ currentOrder: { $exists: false } }, { currentOrder: null }],
     };
+  else if (query.currentOrder == "occupied"){
+    queryBuilder = { ...queryBuilder, currentOrder: {$ne:null}} }
   else if (query.currentOrder)
     queryBuilder = { ...queryBuilder, currentOrder: query.currentOrder };
   if (query.id) queryBuilder = { _id: query.id };

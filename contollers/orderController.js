@@ -1,3 +1,4 @@
+import billing from "../schema/billing.js";
 import employee from "../schema/employee.js";
 import order from "../schema/order.js";
 import { notifyOrderDetails } from "../utils/utils.js";
@@ -39,6 +40,7 @@ export const getAllOrders = async (req, res) => {
       .find(queryBuilder)
       .populate("serviceCategory", "name")
       .populate("addressedBy", "fname lname")
+      .populate("amount", "total")
       .skip((query.page - 1) * query.items)
       .limit(query.items)
       .sort({ bookTime: -1 });
@@ -60,7 +62,8 @@ export const getUsersOrderList = async (req, res) => {
     const allItems = await order
       .find({ _id: { $in: listIds } })
       .populate("serviceCategory", "name")
-      .populate("addressedBy", "fname lname");
+      .populate("addressedBy", "fname lname")
+      .populate("amount", "description tax total discount subTotal");
     return res.status(200).json({ data: allItems });
   } catch (err) {
     return res.status(500).json({ message: err.message });
@@ -68,12 +71,20 @@ export const getUsersOrderList = async (req, res) => {
 };
 
 export const getOrderById = async (req, res) => {
+  console.log("Not even hitting", req.params.id);
   const _id = req.params.id;
   try {
-    const order = await order.findOne({ _id });
-    return res.status(200).json({ message: "Successful", item: order });
+    const individulaOrder = await order
+      .findOne({ _id })
+      .populate("serviceCategory", "name")
+      .populate("addressedBy", "fname lname")
+      .populate("amount", "description tax total discount subTotal");
+    // console.log(individulaOrder, "ID");
+    return res
+      .status(200)
+      .json({ message: "Successful", item: individulaOrder });
   } catch (err) {
-    return res.status(500).json({ message: "Something went wrong" });
+    return res.status(500).json({ message: err.message });
   }
 };
 
@@ -97,11 +108,9 @@ export const updateOrderDetails = async (req, res) => {
           await employee.findByIdAndUpdate(empId, {
             $unset: { currentOrder: "" },
           });
-          return res
-            .status(200)
-            .json({
-              message: "Order category changed and updated successfully",
-            });
+          return res.status(200).json({
+            message: "Order category changed and updated successfully",
+          });
         } catch (err) {
           // rollback order if employee update failed
           await order.updateOne(
@@ -163,47 +172,87 @@ export const unAssignOrder = async (req, res) => {
 
 export const changeOrderStatus = async (req, res) => {
   const { status, amount, employeeId, orderId } = req.body;
-  if (status == "complete") {
+
+  if (status === "complete") {
     try {
+      const orderToUpdate = await order.findById(orderId);
+      if (!orderToUpdate) {
+        return res.status(400).json({ message: "Order does not exist" });
+      }
+
+      console.log("Updating order to complete", req.body.amount);
+      const subtotal = amount.description.reduce((acc, curr) => {
+        const quantity = curr.quantity || 1;
+        return acc + curr.price * quantity;
+      }, 0);
+
+      const taxAmount = (subtotal * (amount.tax || 0)) / 100;
+      const discount = amount.discount || 0;
+      const total = subtotal + taxAmount - discount;
+
+      const newBill = new billing({
+        orderId: orderToUpdate._id,
+        description: amount.description,
+        tax: amount.tax,
+        discount: amount.discount,
+        subTotal: subtotal,
+        total,
+      });
+
+      const savedBill = await newBill.save();
+
       const updatedOrder = await order.findByIdAndUpdate(
-        { _id: orderId },
-        { $set: { amount, status: "Completed" } },
+        orderId,
+        { $set: { amount: savedBill._id, status: "Completed" } },
         { new: true }
       );
-      if (updatedOrder) {
-        console.log(updatedOrder.addressedBy);
-        await employee.updateOne(
-          { _id: updatedOrder.addressedBy },
-          {
-            $set: { currentOrder: null },
-            $addToSet: { ordersCompleted: orderId },
-          }
-        );
-        return res.status(201).json({ message: "Status updated" });
+
+      const modifiedEmp = await employee.updateOne(
+        { _id: employeeId },
+        { $unset: { currentOrder: "" } }
+      );
+
+      if (modifiedEmp.modifiedCount === 0) {
+        // Rollback bill and order status
+        await billing.findByIdAndDelete(savedBill._id);
+        await order.findByIdAndUpdate(orderId, {
+          $set: { status: "Progress" },
+        });
+
+        return res
+          .status(500)
+          .json({ message: "Employee update failed, rolled back changes." });
       }
-      return res.status(400).json({ message: "Failed" });
+
+      return res.status(201).json({ message: "Status updated" });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      console.error("Error in status update:", err);
+      return res.status(500).json({ message: err.message });
     }
-  } else if (status == "progress") {
+  } else if (status === "progress") {
     try {
       const updatedOrder = await order.findByIdAndUpdate(
-        { _id: orderId },
+        orderId,
         { $set: { status: "Progress", addressedBy: employeeId } },
         { new: true }
       );
-      console.log("Updated", updatedOrder);
-      if (updatedOrder) {
-        await employee.updateOne(
-          { _id: updatedOrder.addressedBy },
-          { $set: { currentOrder: orderId } }
-        );
-        return res.status(201).json({ message: "Status updated" });
+
+      if (!updatedOrder) {
+        return res.status(400).json({ message: "Order not found" });
       }
-      return res.status(400).json({ message: "Failed" });
+
+      await employee.updateOne(
+        { _id: employeeId },
+        { $set: { currentOrder: orderId } }
+      );
+
+      return res.status(201).json({ message: "Status updated" });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      console.error("Error in progress status update:", err);
+      return res.status(500).json({ message: err.message });
     }
+  } else {
+    return res.status(400).json({ message: "Invalid status value" });
   }
 };
 

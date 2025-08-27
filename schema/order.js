@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const orderSchema = new mongoose.Schema({
   name: {
@@ -51,14 +51,14 @@ const orderSchema = new mongoose.Schema({
     default: "Pending",
   },
   amount: {
-    type: Number,
-    min: [0, "Amount cannot be negative"],
+    type: mongoose.Schema.ObjectId,
+    ref: "Billing",
   },
   addressedBy: {
     type: mongoose.Schema.ObjectId,
     ref: "Employee",
   },
-});
+}, { timeStamp: true });
 
 const order = mongoose.model("Order", orderSchema);
 export default order;
