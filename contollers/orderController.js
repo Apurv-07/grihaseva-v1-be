@@ -71,7 +71,6 @@ export const getUsersOrderList = async (req, res) => {
 };
 
 export const getOrderById = async (req, res) => {
-  console.log("Not even hitting", req.params.id);
   const _id = req.params.id;
   try {
     const individulaOrder = await order
@@ -94,12 +93,11 @@ export const updateOrderDetails = async (req, res) => {
 
   try {
     if (selectedCategory !== category) {
-      // Case 1: Category changed
       const orderUpdated = await order.updateOne(
         { _id: orderId },
         {
-          $set: { ...body, status: "Pending", serviceCategory: category }, // update rest of details like name, etc.
-          $unset: { addressedBy: "" }, // unset addressedBy
+          $set: { ...body, status: "Pending", serviceCategory: category },
+          $unset: { addressedBy: "" },
         }
       );
 
@@ -112,11 +110,10 @@ export const updateOrderDetails = async (req, res) => {
             message: "Order category changed and updated successfully",
           });
         } catch (err) {
-          // rollback order if employee update failed
           await order.updateOne(
             { _id: orderId },
             {
-              $set: { addressedBy: empId }, // restore employee link
+              $set: { addressedBy: empId },
             }
           );
           return res
