@@ -15,19 +15,19 @@ export const login = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
       );
-      // res.cookie("auth", auth, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === "production",
-      //   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      //   path: "/",
-      // });
       res.cookie("auth", auth, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         path: "/",
-      })      
-      .status(201)
+      })
+      // res.cookie("auth", auth, {
+      //   httpOnly: true,
+      //   secure: false,
+      //   sameSite: "lax",
+      //   path: "/",
+      // })      
+      .status(200)
       .json({ message: "Logged in", authorized: true });;
       // return res
       //   .cookie("auth", auth, { httpOnly: true })
