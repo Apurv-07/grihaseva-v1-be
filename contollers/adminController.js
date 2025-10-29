@@ -15,10 +15,16 @@ export const login = async (req, res) => {
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
       );
+      // res.cookie("auth", auth, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === "production",
+      //   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      //   path: "/",
+      // });
       res.cookie("auth", auth, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        httpOnly: false,
+        secure: false,
+        sameSite: "lax",
         path: "/",
       });
     }
