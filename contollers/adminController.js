@@ -22,7 +22,7 @@ export const login = async (req, res) => {
       //   path: "/",
       // });
       res.cookie("auth", auth, {
-        httpOnly: false,
+        httpOnly: true,
         secure: false,
         sameSite: "lax",
         path: "/",
