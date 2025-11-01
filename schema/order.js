@@ -58,6 +58,35 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Employee",
   },
+  address: {
+    addressLine1: {
+      type: String,
+      maxlength: 40,
+      required: false,
+    },
+    addressLine2: {
+      type: String,
+      maxlength: 40,
+      required: false,
+    },
+    landmark: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: false,
+    },
+    pinCode: {
+      type: String,
+      required: true,
+      match: [/^\d{6}$/, "Pin code must be 6 digits"],
+    }
+  }
 }, { timeStamp: true });
 
 const order = mongoose.model("Order", orderSchema);

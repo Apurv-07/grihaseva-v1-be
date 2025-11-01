@@ -268,7 +268,20 @@ export const deleteOrder = async (req, res) => {
 
 export const createOrder = async (req, res) => {
   //Add an address
-  const { name, email, phone, issue, category, deliveryTime } = req.body;
+  const {
+    name,
+    email,
+    phone,
+    issue,
+    category,
+    deliveryTime,
+    addressLine1,
+    addressLine2,
+    landmark,
+    city,
+    state,
+    pinCode,
+  } = req.body;
   console.log(req.body);
   if (!name || !category || !issue) {
     return res.status(400).json({ message: "Please enter required fields" });
@@ -277,6 +290,9 @@ export const createOrder = async (req, res) => {
     return res
       .status(400)
       .json({ message: "Please enter either email or phone number" });
+  }
+  if((!addressLine1 && !addressLine2) || !city || !landmark || !pinCode){
+    return res.status(400).json({ message: "Please enter complete address" });
   }
   try {
     const existingOrder = await order
@@ -301,6 +317,14 @@ export const createOrder = async (req, res) => {
         serviceCategory: category,
         deliveryTime: new Date(deliveryTime),
         status: "Pending",
+        address: {
+          addressLine1,
+          addressLine2,
+          landmark,
+          city,
+          state,
+          pinCode,
+        },
       });
     } else {
       createOrder = new order({
@@ -310,6 +334,14 @@ export const createOrder = async (req, res) => {
         issue,
         serviceCategory: category,
         status: "Pending",
+        address: {
+          addressLine1,
+          addressLine2,
+          landmark,
+          city,
+          state,
+          pinCode,
+        },
       });
     }
     await createOrder.save();
