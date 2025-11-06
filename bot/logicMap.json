@@ -1,0 +1,204 @@
+{
+  "intents": {
+    "greeting": {
+      "patterns": [
+        "hi", "hello", "hey", "good morning", "good evening", "yo",
+        "sup", "hola", "howdy", "hi there", "good afternoon"
+      ],
+      "responses": [
+        "Hey there! 👋 I’m Techfix Assistant. How can I make your day easier?",
+        "Hi! 😊 Need help with something around the house?"
+      ]
+    },
+
+    "service_catalog": {
+      "patterns": [
+        "what services", "services you offer", "offer", "offers",
+        "do you offer", "provide", "do you provide", "what can you do",
+        "what you fix", "do you fix", "what work", "work you handle",
+        "service list", "types of services", "tell me your services",
+        "help with", "what help", "your services"
+      ],
+      "responses": [
+        "We currently offer plumbing, electrical, and painting services. 🛠️",
+        "Our professionals handle everything from leaks and lighting to paint jobs — what kind of help do you need?",
+        "We provide skilled plumbing, electrical, and painting assistance across your area. What service are you looking for today?"
+      ]
+    },
+
+    "farewell": {
+      "patterns": [
+        "bye", "goodbye", "see you", "take care", "good night",
+        "later", "see ya", "talk to you later"
+      ],
+      "responses": [
+        "Goodbye! 👋 Reach out anytime you need us.",
+        "See you soon! Stay safe and take care. 💙"
+      ]
+    },
+
+    "gratitude": {
+      "patterns": [
+        "thank", "thanks", "appreciate", "grateful", "cheers",
+        "thanks a lot", "thank you so much"
+      ],
+      "responses": [
+        "You’re very welcome! 😊 Happy to help anytime.",
+        "Glad I could assist! 🙏 Don’t hesitate to ping me again."
+      ]
+    },
+
+    "complaint": {
+      "patterns": [
+        "bad", "poor", "terrible", "rude", "not happy", "angry",
+        "worst", "complaint", "unprofessional", "delay", "late",
+        "disappointed", "frustrated", "unsatisfied"
+      ],
+      "responses": [
+        "I’m really sorry to hear that 😔 Could you tell me what went wrong? I’ll make sure it’s escalated.",
+        "That doesn’t sound right 😞 Please share the issue and I’ll alert our support team immediately."
+      ]
+    },
+
+    "compliment": {
+      "patterns": [
+        "great", "awesome", "nice", "good job", "love", "amazing",
+        "perfect", "excellent", "fantastic", "wonderful", "cool",
+        "superb", "best service"
+      ],
+      "responses": [
+        "That means a lot! 🌟 Thank you for trusting Techfix.",
+        "You just made our day! 💙 We appreciate your kind words."
+      ]
+    },
+
+    "urgency": {
+      "patterns": [
+        "urgent", "asap", "right now", "immediately", "emergency",
+        "fast", "quick", "hurry"
+      ],
+      "responses": [
+        "Got it! 🚨 We’ll prioritize this immediately. Please share your name to begin booking.",
+        "Understood — marking this as urgent. Kindly share your full name so we can dispatch help fast!"
+      ],
+      "followup": "ask_name"
+    },
+
+    "status_check": {
+      "patterns": [
+        "status", "confirmed", "when", "time", "arriving",
+        "coming", "update", "progress", "where is technician",
+        "is it confirmed", "has anyone come"
+      ],
+      "responses": [
+        "Let me check that for you 🕓 Could you please share your booking ID or phone number?",
+        "I can help with that — can you confirm the phone number used for your booking?"
+      ]
+    },
+
+    "company_info": {
+      "patterns": [
+        "founder", "who started", "who owns", "about company",
+        "co founder", "co-founder", "started by", "who built",
+        "creator", "owner", "founding", "origin", "how techfix started"
+      ],
+      "responses": [
+        "Techfix was founded by Apurva in 2025 to make home repairs effortless! 🛠️",
+        "Apurva started Techfix in 2025 with the vision of making reliable home services easily accessible."
+      ]
+    },
+
+    "team_info": {
+      "patterns": [
+        "team", "teammates", "members", "staff", "employees",
+        "co founder", "cofounders", "crew", "developers",
+        "support team", "technicians", "people behind",
+        "team members", "workers", "crew members",
+        "who works", "who all work", "your people"
+      ],
+      "responses": [
+        "Techfix is powered by a passionate team of technicians, developers, and support experts! 💪",
+        "We have an amazing crew — from skilled electricians and plumbers to a small but mighty tech team led by Apurva. 🚀",
+        "Our team includes experts in plumbing, electrical, and painting work — all trained and verified by Techfix."
+      ]
+    },
+
+    "vision_mission": {
+      "patterns": [
+        "vision", "mission", "goal", "why start", "purpose",
+        "idea behind", "story", "why techfix", "what do you believe",
+        "your aim", "core value"
+      ],
+      "responses": [
+        "Our mission is to make home maintenance effortless, reliable, and transparent for everyone. 💡",
+        "Techfix was born from a simple idea — to connect skilled professionals with people who value quality service.",
+        "We aim to build India’s most trusted home services network — one repair at a time. 🔧"
+      ]
+    },
+
+    "smalltalk": {
+      "patterns": [
+        "how are you", "how’s it going", "what’s up", "are you real",
+        "are you a robot", "do you sleep", "who are you",
+        "how do you work", "what can you do"
+      ],
+      "responses": [
+        "I’m all good — always online and ready to help! 🤖✨",
+        "Haha, no coffee needed here ☕ — just plenty of energy to solve your problems!",
+        "I’m Techfix Assistant — here to help you book plumbers, electricians, or painters anytime!"
+      ]
+    },
+
+    "service_request": {
+      "patterns": [
+        "plumber", "tap", "pipe", "leak", "toilet", "bathroom",
+        "electrician", "switch", "fan", "light", "cleaning",
+        "paint", "painter", "ac repair", "water heater", "geyser", "socket", "wiring",
+        "faucet", "drain", "circuit", "fixture", "ceiling fan"
+      ],
+      "responses": [
+        "Sure — we can send a {service} to your area. May I have your full name?",
+        "Absolutely! I can arrange a {service} for you. Please tell me your name so we can start."
+      ],
+      "followup": "ask_name",
+      "slots": ["service"]
+    },
+
+    "pricing": {
+      "patterns": [
+        "price", "cost", "charge", "rate", "fees", "how much",
+        "pricing", "charges", "what do you charge"
+      ],
+      "responses": [
+        "Our base inspection usually starts at ₹99 and is adjusted in the final bill.",
+        "Pricing depends on the issue, but we’ll always give you a quote before work begins. 💰",
+        "For most basic services, charges start from ₹99. We confirm final pricing after inspection."
+      ]
+    },
+
+    "repeat_confirm": {
+      "patterns": ["really", "sure", "confirm", "are you sure", "is it true", "true right"],
+      "responses": ["Yes, absolutely ✅", "Confirmed! You can count on it. 👍"]
+    }
+  },
+
+  "flows": {
+    "ask_name": { "question": "Sure! Before we proceed, may I have your full name?", "next": "ask_phone" },
+    "ask_phone": { "question": "Thanks! Please share your phone number 📞", "next": "ask_email" },
+    "ask_email": { "question": "Got it. Could you please share your email? (Optional — you can skip this)", "next": "ask_address_line1" },
+    "ask_address_line1": { "question": "Please enter your Address Line 1 (House No, Street). 🏠", "next": "ask_address_line2" },
+    "ask_address_line2": { "question": "Got it. Now your Address Line 2 (Area, Locality)?", "next": "ask_landmark" },
+    "ask_landmark": { "question": "Great! Please tell me a nearby landmark to help our technician locate you easily.", "next": "ask_city" },
+    "ask_city": { "question": "Which city are you located in?", "next": "ask_state" },
+    "ask_state": { "question": "Please share your state (Optional).", "next": "ask_pincode" },
+    "ask_pincode": { "question": "Almost done! Please share your pin code 📍", "next": "ask_delivery_time" },
+    "ask_delivery_time": { "question": "Would you like to specify a preferred delivery time? (Optional, use dd-mm-yyyy hh:mm format)", "next": "ask_issue_description" },
+    "ask_issue_description": { "question": "Finally, please describe the issue briefly (e.g., leaking tap, fan not working, etc.).", "next": "confirm_booking" },
+    "confirm_booking": { "question": "Thanks! I’ve collected all your details. Please confirm before I create your n", "api": "/api/orders/create", "end": true }
+  },
+
+  "negations": [
+    "don't", "no", "cancel", "never mind", "later", "forget it",
+    "stop", "leave it", "nothing", "ignore", "no need"
+  ]
+}

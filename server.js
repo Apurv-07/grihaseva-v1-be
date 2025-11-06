@@ -5,8 +5,10 @@ import orderRouter from "./routes/orderRoutes.js";
 import categoryRouter from "./routes/categoryRoutes.js";
 import empRoute from "./routes/employeeRoute.js";
 import adminRouter from "./routes/adminRoutes.js";
+import chatRouter from "./routes/chatRouter.js";
 import cors from "cors";
 import { getCloudinarySignature } from "./utils/fileUpload.js";
+import { loadLogic } from "./bot/botEngine.js";
 const app = express();
 
 app.use(express.json());
@@ -21,7 +23,10 @@ app.use("/api/order", orderRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/employee", empRoute);
 app.use("/api/admin", adminRouter);
+app.use("/api/chat", chatRouter);
 app.get("/api/imageSignature", getCloudinarySignature)
+
+loadLogic(); 
 
 app.listen(process.env.PORT, async () => {
   try {
