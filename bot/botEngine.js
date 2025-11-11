@@ -5,14 +5,15 @@ import template from "lodash.template";
 import { getSession, saveSession, clearSession } from "./sessionStore.js";
 import category from "../schema/category.js";
 import { createOrder } from "../contollers/orderController.js";
+import { SERVICE_MAP } from "../utils/categoryMapper.js";
 
 let logic = null;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function invalidOption(value){
-  if(value === 'skip' || value === '' || value === 'no'){
+function invalidOption(value) {
+  if (value === 'skip' || value === '' || value === 'no') {
     return true;
   }
 }
@@ -65,7 +66,9 @@ function detectIntent(userMessage) {
       const regex = new RegExp(`\\b${pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
       if (regex.test(msg)) {
         const slots = {};
-        if (data.slots?.includes("service")) slots.service = pattern;
+        if (data.slots?.includes("service")) {
+          slots.service = SERVICE_MAP[pattern] || pattern;
+        }
         return { intent, data, slots };
       }
     }
@@ -117,7 +120,7 @@ export async function generateBotResponse(userMessage, sessionId) {
 
         let payload = {
           name: session.slots.name,
-          email: session.slots.email ,
+          email: session.slots.email,
           phone: session.slots.phone,
           issue: session.slots.issue_description,
           category: categoryName ? categoryName._id : null,
@@ -128,11 +131,11 @@ export async function generateBotResponse(userMessage, sessionId) {
           pinCode: session.slots.pincode
         };
 
-        if(!invalidOption(session.slots.preferred_delivery_time)){
-          payload={...payload, preferredDeliveryTime: session.slots.preferred_delivery_time}
+        if (!invalidOption(session.slots.preferred_delivery_time)) {
+          payload = { ...payload, preferredDeliveryTime: session.slots.preferred_delivery_time }
         }
-        if(!invalidOption( session.slots.state)){
-          payload={...payload, state: session.slots.state}
+        if (!invalidOption(session.slots.state)) {
+          payload = { ...payload, state: session.slots.state }
         }
 
         const mockReq = { body: payload };
