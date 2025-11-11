@@ -1,5 +1,6 @@
 import category from "../schema/category.js";
 import {v2 as cloudinary} from "cloudinary";
+import order from "../schema/order.js";
 
 export const getAllCategories=async (req, res)=>{
     try{
@@ -9,6 +10,48 @@ export const getAllCategories=async (req, res)=>{
         return res.status(404).json({message: "Something is wrong! Try again."})
     }
 }
+
+export const getPopularCategories = async (req, res) => {
+  try {
+    const popularCategories = await order.aggregate([
+      {
+        $group: {
+          _id: "$serviceCategory",   // ✅ FIXED
+          totalOrders: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryInfo"
+        }
+      },
+      { $unwind: "$categoryInfo" },
+      {
+        $project: {
+          _id: 0,
+          categoryId: "$_id",
+          categoryName: "$categoryInfo.name",
+          image: "$categoryInfo.image",
+          startingFrom: "$categoryInfo.startingFrom",
+          description: "$categoryInfo.description",
+          priceDescription: "$categoryInfo.priceDescription",
+          totalOrders: 1
+        }
+      },
+      { $sort: { totalOrders: -1 } },
+      { $limit: 4 }
+    ]);
+
+    return res.status(200).json({ data: popularCategories });
+  } catch (err) {
+    console.error(err);
+    return res.status(404).json({ message: "Something is wrong! Try again." });
+  }
+};
+
 
 export const createCategory=async (req, res)=>{
     const categoryName=req.body.name;
