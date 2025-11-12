@@ -5,7 +5,7 @@ const orderRouter=Router();
 
 orderRouter.route("/").get(authProtector, getAllOrders)
 
-orderRouter.route("/getOrdersForUser").get(getUsersOrderList)
+orderRouter.route("/getOrdersForUser").post(getUsersOrderList)
 
 orderRouter.route("/createOrder").post(createOrder)
 
