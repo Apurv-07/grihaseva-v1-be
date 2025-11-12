@@ -9,6 +9,7 @@ import chatRouter from "./routes/chatRouter.js";
 import cors from "cors";
 import { getCloudinarySignature } from "./utils/fileUpload.js";
 import { loadLogic } from "./bot/botEngine.js";
+import complainRouter from "./routes/complainRoutes.js";
 const app = express();
 
 app.use(express.json());
@@ -24,6 +25,7 @@ app.use("/api/category", categoryRouter);
 app.use("/api/employee", empRoute);
 app.use("/api/admin", adminRouter);
 app.use("/api/chat", chatRouter);
+app.use("/api/complaints", complainRouter);
 app.get("/api/imageSignature", getCloudinarySignature)
 
 loadLogic(); 

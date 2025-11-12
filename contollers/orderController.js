@@ -344,9 +344,9 @@ export const createOrder = async (req, res) => {
         },
       });
     }
-    await createOrder.save();
+    const created=await createOrder.save();
     notifyOrderDetails(createOrder);
-    return res.status(201).json({ message: "Order successfully created" });
+    return res.status(201).json({ message: "Order successfully created", orderId: created._id });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: err.message });

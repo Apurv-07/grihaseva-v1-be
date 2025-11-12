@@ -17,10 +17,14 @@ chatRouter.get("/:name", async (req, res) => {
   }
 })
 chatRouter.post("/send", async (req, res) => {
-  const { name, message, conversationId, showAll } = req.body;
+  const { name, conversationId, showAll } = req.body;
+  let {message}=req.body;
 
-  if (!name || (!message && !showAll)) {
-    return res.status(400).json({ error: "Name and message required" });
+  if (!name) {
+    return res.status(400).json({ error: "Name is required" });
+  }
+  if(!message){
+    message="skip";
   }
 
   try {

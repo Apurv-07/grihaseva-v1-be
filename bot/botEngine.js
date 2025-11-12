@@ -12,19 +12,32 @@ let logic = null;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function invalidOption(value) {
-  if (value === 'skip' || value === '' || value === 'no') {
-    return true;
-  }
-}
+// 🧠 Helper to detect invalid / skipped input
+function isSkip(value, fieldType) {
+  if (!value || !value.trim()) return true;
 
-// Load logic once
-export function loadLogic() {
-  const filePath = path.join(__dirname, "logicMap.json");
-  const text = fs.readFileSync(filePath, "utf8");
-  logic = JSON.parse(text);
-  console.log("✅ Logic map loaded successfully:", filePath);
-  console.log("Negations loaded:", logic.negations);
+  const v = value.toLowerCase().trim();
+  const skipWords = [
+    "skip", "no", "n", "na", "none", "nothing", "leave", "ignore",
+    "next", "continue", "nope", "nah", "not now", "not applicable"
+  ];
+  if (skipWords.includes(v)) return true;
+
+  // Field-specific detection
+  if (fieldType === "email") {
+    if (!v.includes("@") || v.length < 6 || !/\.[a-z]{2,}$/i.test(v)) return true;
+  }
+
+  if (fieldType === "state") {
+    if (v.length < 3 || !/[a-z]/i.test(v)) return true;
+  }
+
+  if (fieldType === "deliveryTime") {
+    const dateTimeRegex = /^\d{1,2}-\d{1,2}-\d{4}( \d{1,2}:\d{2})?$/;
+    if (!dateTimeRegex.test(v)) return true;
+  }
+
+  return false;
 }
 
 // --- Context-aware negation detection ---
@@ -47,7 +60,6 @@ function containsNegation(text) {
     if (lower.includes(p)) return false;
   }
 
-  // Regular negation match
   for (const n of logic.negations) {
     const re = new RegExp(`\\b${escapeRegex(n.toLowerCase())}\\b`, "i");
     if (re.test(lower)) {
@@ -58,7 +70,16 @@ function containsNegation(text) {
   return false;
 }
 
-// Intent detection
+// --- Load logic once
+export function loadLogic() {
+  const filePath = path.join(__dirname, "logicMap.json");
+  const text = fs.readFileSync(filePath, "utf8");
+  logic = JSON.parse(text);
+  console.log("✅ Logic map loaded successfully:", filePath);
+  console.log("Negations loaded:", logic.negations);
+}
+
+// --- Intent detection ---
 function detectIntent(userMessage) {
   const msg = userMessage.toLowerCase();
   for (const [intent, data] of Object.entries(logic.intents)) {
@@ -76,7 +97,7 @@ function detectIntent(userMessage) {
   return { intent: null };
 }
 
-// 🚀 Main Bot Function
+// --- Main Bot Function ---
 export async function generateBotResponse(userMessage, sessionId) {
   let session = getSession(sessionId);
 
@@ -118,6 +139,7 @@ export async function generateBotResponse(userMessage, sessionId) {
 
         console.log("🔍 Matched category for service:", categoryName);
 
+        // --- Construct payload safely ---
         let payload = {
           name: session.slots.name,
           email: session.slots.email,
@@ -131,24 +153,44 @@ export async function generateBotResponse(userMessage, sessionId) {
           pinCode: session.slots.pincode
         };
 
-        if (!invalidOption(session.slots.preferred_delivery_time)) {
-          payload = { ...payload, preferredDeliveryTime: session.slots.preferred_delivery_time }
+        // Add optional fields if valid
+        if (!isSkip(session.slots.preferred_delivery_time, "deliveryTime")) {
+          payload.preferredDeliveryTime = session.slots.preferred_delivery_time;
         }
-        if (!invalidOption(session.slots.state)) {
-          payload = { ...payload, state: session.slots.state }
+        if (!isSkip(session.slots.state, "state")) {
+          payload.state = session.slots.state;
         }
 
-        const mockReq = { body: payload };
+        // --- Simulate Express res for error capture ---
+        let responseStatus = null;
+        let responseData = null;
+
         const mockRes = {
-          status: (code) => ({ json: (data) => ({ code, data }) })
+          status: (code) => {
+            responseStatus = code;
+            return {
+              json: (data) => {
+                responseData = data;
+                return { code, data };
+              }
+            };
+          }
         };
 
         console.log("🧾 Creating order with payload:", payload);
-        await createOrder(mockReq, mockRes);
+        await createOrder({ body: payload }, mockRes);
+
+        // If creation failed
+        if (responseStatus >= 400 || !responseData || responseData.error) {
+          console.error("❌ Order creation failed response:", responseData);
+          clearSession(sessionId);
+          return "⚠️ Something went wrong while creating your booking. Please try again or book manually.";
+        }
+
       } catch (err) {
-        console.error("⚠️ Order creation failed:", err);
+        console.error("⚠️ Order creation error:", err);
         clearSession(sessionId);
-        return "Sorry, there was a technical issue confirming your booking. Please try again later.";
+        return "⚠️ Something went wrong while creating your booking. Please try again or book manually.";
       }
 
       clearSession(sessionId);
@@ -176,12 +218,20 @@ export async function generateBotResponse(userMessage, sessionId) {
     return "Okay, I’ll stop for now. Message again when you’re ready.";
   }
 
+  // --- Update session ---
   session.last_intent = detection.intent;
   session.slots = { ...session.slots, ...detection.slots };
   session.pending_flow = detection.data.followup || null;
   saveSession(sessionId, session);
 
-  const responses = detection.data.responses;
+  // --- Fix service placeholder rendering ---
+  const responses = detection.data.responses.map((r) => {
+    if (session.slots.service) {
+      return r.replace(/{service}/gi, session.slots.service);
+    }
+    return r;
+  });
+
   const raw = responses[Math.floor(Math.random() * responses.length)];
   const compiled = template(raw);
   return compiled({ ...session.slots });

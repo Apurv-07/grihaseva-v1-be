@@ -31,6 +31,7 @@ export const SERVICE_MAP = {
     distemper: "painter",
     "texture paint": "painter",
     painters: "painter",
+    painting: "painter",
     putty: "painter",
 
     // cleaning
