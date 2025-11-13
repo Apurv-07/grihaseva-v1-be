@@ -23,6 +23,10 @@ const complaintsSchema = new mongoose.Schema({
         type: String,
         enum: ["Open", "Closed"]
     },
+    notes: {
+        type: String,
+        trim: true,
+    }
 }, {timestamps: true})
 
 const Complaints = mongoose.model("Complaints", complaintsSchema);
