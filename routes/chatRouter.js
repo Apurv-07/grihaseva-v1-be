@@ -2,8 +2,13 @@ import { Router } from "express";
 import chatModel from "../schema/chats.js";
 import { generateBotResponse } from "../bot/botEngine.js";
 const chatRouter = Router();
-chatRouter.get("/", (req, res) => {
-  res.send("Chat route is working");
+chatRouter.get("/", async (req, res) => {
+  try {
+    const allChats = await chatModel.find({})
+    return res.status(200).json({message: "success", data:allChats})
+  }catch(err){
+    return res.status(500).json({message:err.message})
+  }
 });
 
 chatRouter.get("/:name", async (req, res) => {

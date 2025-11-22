@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { createCategory, deleteCategory, deleteCategoryImage, getAllCategories, getPopularCategories, updateCategory } from "../contollers/categoryController.js";
+import { addServiceCategory, createCategory, deleteCategory, deleteCategoryImage, getAllCategories, getAllServices, getPopularCategories, updateCategory } from "../contollers/categoryController.js";
 import authProtector from "../middlewares/authProtector.js";
 
 const categoryRouter=Router();
@@ -10,5 +10,7 @@ categoryRouter.route("/createCategory").post(authProtector, createCategory)
 categoryRouter.route("/deleteCategory/:id").delete(authProtector, deleteCategory)
 categoryRouter.route("/deleteCategoryImage/:id").delete(authProtector, deleteCategoryImage)
 categoryRouter.route("/updateCategory/:id").put(authProtector, updateCategory)
+categoryRouter.route("/addService").post(authProtector, addServiceCategory)
+categoryRouter.route('/getAllServices').get(getAllServices);
 
 export default categoryRouter

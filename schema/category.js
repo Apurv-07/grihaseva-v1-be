@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 const categorySchema=new mongoose.Schema({
     name: {
         type: String,
@@ -24,6 +24,9 @@ const categorySchema=new mongoose.Schema({
     startingFrom: {
         type: Number,
         required: true
+    }, 
+    parentService: {
+        type: mongoose.Schema.ObjectId,
     }
 }, {timeStamp: true})
 

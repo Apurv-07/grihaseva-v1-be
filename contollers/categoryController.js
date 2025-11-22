@@ -1,6 +1,7 @@
 import category from "../schema/category.js";
 import {v2 as cloudinary} from "cloudinary";
 import order from "../schema/order.js";
+import serviceModal from "../schema/service.js";
 
 export const getAllCategories=async (req, res)=>{
     try{
@@ -127,3 +128,28 @@ export const deleteCategoryImage = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
+export const addServiceCategory = async (req, res)=>{
+  const {serviceName}=req.body;
+  const newService=new serviceModal ({
+    name: serviceName
+  })
+  if(serviceName.length<4){
+    return res.status(205).json({message: "Operation failed, required length in 4"})
+  }
+  try {
+    await newService.save();
+    return res.status(201).json({message: "Created"})
+  }catch(err){
+    return res.status(500).json({message: err.message})
+  }
+}
+
+export const getAllServices = async (req, res)=>{
+  try {
+    const allServices= await serviceModal.find({})
+    return res.status(200).json({message: "Successful", data:allServices})
+  }catch(e){
+    return res.status(400).json({message: "Something went wrong", err: e.message})
+  }
+}
