@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000","https://newrepo-grihseva-fe-j8en.vercel.app", "https://www.grihseva.com/"],
+    origin: ["http://localhost:3000","https://newrepo-grihseva-fe-j8en.vercel.app", "https://www.grihseva.com"],
     credentials: true,
   })
 );
