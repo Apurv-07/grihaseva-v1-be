@@ -56,15 +56,20 @@ export const getPopularCategories = async (req, res) => {
 
 export const createCategory = async (req, res) => {
   const categoryName = req.body.name;
-  const { description, priceDescription, startingFrom, image } = req.body;
+  const { description, priceDescription, startingFrom, image, parentService } = req.body;
   if (!categoryName) {
     return res.status(400).json({ message: "Please enter valid category" })
+  }
+  const existingCategory = await category.findOne({ name: categoryName });
+  if (existingCategory) {
+    return res.status(300).json({ message: "Category with this name already exists" })
   }
   try {
     const newCategory = new category({
       name: categoryName,
       description,
       priceDescription,
+      parentService,
       startingFrom,
       image
     })
