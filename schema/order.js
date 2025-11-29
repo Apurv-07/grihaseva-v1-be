@@ -28,6 +28,10 @@ const orderSchema = new mongoose.Schema({
     ref: "Category",
     type: mongoose.Schema.Types.ObjectId,
   },
+  parentService: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Service",
+  },
   bookTime: {
     type: Date,
     default: Date.now,

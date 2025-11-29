@@ -1,6 +1,5 @@
 import category from "../schema/category.js";
 import { v2 as cloudinary } from "cloudinary";
-import order from "../schema/order.js";
 import serviceModal from "../schema/service.js";
 
 export const getAllCategories = async (req, res) => {
@@ -14,31 +13,29 @@ export const getAllCategories = async (req, res) => {
 
 export const getPopularCategories = async (req, res) => {
   try {
-    const popularCategories = await order.aggregate([
-      {
-        $group: {
-          _id: "$serviceCategory",   // ✅ FIXED
-          totalOrders: { $sum: 1 }
-        }
-      },
+    const popularCategories = await category.aggregate([
       {
         $lookup: {
-          from: "categories",
+          from: "orders",
           localField: "_id",
-          foreignField: "_id",
-          as: "categoryInfo"
+          foreignField: "serviceCategory",
+          as: "orders"
         }
       },
-      { $unwind: "$categoryInfo" },
+      {
+        $addFields: {
+          totalOrders: { $size: "$orders" }
+        }
+      },
       {
         $project: {
           _id: 0,
           categoryId: "$_id",
-          categoryName: "$categoryInfo.name",
-          image: "$categoryInfo.image",
-          startingFrom: "$categoryInfo.startingFrom",
-          description: "$categoryInfo.description",
-          priceDescription: "$categoryInfo.priceDescription",
+          categoryName: "$name",
+          image: "$image",
+          startingFrom: "$startingFrom",
+          description: "$description",
+          priceDescription: "$priceDescription",
           totalOrders: 1
         }
       },
@@ -52,6 +49,7 @@ export const getPopularCategories = async (req, res) => {
     return res.status(404).json({ message: "Something is wrong! Try again." });
   }
 };
+
 
 
 export const createCategory = async (req, res) => {

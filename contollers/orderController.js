@@ -96,7 +96,7 @@ export const updateOrderDetails = async (req, res) => {
       const orderUpdated = await order.updateOne(
         { _id: orderId },
         {
-          $set: { ...body, status: "Pending", serviceCategory: category },
+          $set: { ...body, status: "Pending", serviceCategory: category, parentService: body.service },
           $unset: { addressedBy: "" },
         }
       );
@@ -274,6 +274,7 @@ export const createOrder = async (req, res) => {
     phone,
     issue,
     category,
+    service,
     deliveryTime,
     addressLine1,
     addressLine2,
@@ -283,7 +284,7 @@ export const createOrder = async (req, res) => {
     pinCode,
   } = req.body;
   console.log(req.body);
-  if (!name || !category || !issue) {
+  if (!name || !service || !issue) {
     return res.status(400).json({ message: "Please enter required fields" });
   }
   if (!email && !phone) {
@@ -315,6 +316,7 @@ export const createOrder = async (req, res) => {
         phone,
         issue,
         serviceCategory: category,
+        parentService: service,
         deliveryTime: new Date(deliveryTime),
         status: "Pending",
         address: {
@@ -333,6 +335,7 @@ export const createOrder = async (req, res) => {
         phone,
         issue,
         serviceCategory: category,
+        parentService: service,
         status: "Pending",
         address: {
           addressLine1,
