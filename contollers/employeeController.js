@@ -129,13 +129,21 @@ export const createEmployee = async (req, res) => {
     specializationCategory,
     profileImage,
     publicId,
+    address,
+    state,
+    city,
+    postalCode,
   } = req.body;
+  console.log("Req Body:", req.body);
   if (
     !fname ||
     !lname ||
     !phone ||
     !adharId ||
-    !specializationCategory.length > 0
+    !specializationCategory.length > 0 ||
+    !address ||
+    !city ||
+    postalCode.length != 6
   ) {
     return res
       .status(400)
@@ -154,6 +162,10 @@ export const createEmployee = async (req, res) => {
       specialized: specializationCategory,
       profileImage,
       publicId,
+      address,
+      state,
+      city,
+      postalCode,
     });
     await newEmp.save();
     return res.status(201).json({ message: "created successfully" });

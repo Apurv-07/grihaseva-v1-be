@@ -89,14 +89,14 @@ export const getOrderById = async (req, res) => {
 
 export const updateOrderDetails = async (req, res) => {
   const orderId = req.params.id;
-  const { category, selectedCategory, empId, ...body } = req.body;
+  const { category, selectedCategory, service, empId, ...body } = req.body;
 
   try {
     if (selectedCategory !== category) {
       const orderUpdated = await order.updateOne(
         { _id: orderId },
         {
-          $set: { ...body, status: "Pending", serviceCategory: category, parentService: body.service },
+          $set: { ...body, status: "Pending", serviceCategory: category, parentService: service },
           $unset: { addressedBy: "" },
         }
       );
@@ -283,8 +283,8 @@ export const createOrder = async (req, res) => {
     state,
     pinCode,
   } = req.body;
-  console.log(req.body);
-  if (!name || !service || !issue) {
+  console.log("llll", req.body);
+  if (!name || (!service && !category) || !issue) {
     return res.status(400).json({ message: "Please enter required fields" });
   }
   if (!email && !phone) {

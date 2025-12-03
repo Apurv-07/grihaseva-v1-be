@@ -44,6 +44,23 @@ const employeeSchema = new mongoose.Schema(
         ref: "Order",
       },
     ],
+    address: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+      match: [/^\d{6}$/, "Postal code must be 6 digits"],
+    },
   },
   { timeStamp: true }
 );

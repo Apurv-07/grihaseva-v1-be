@@ -6,7 +6,7 @@ const empRoute=Router();
 
 empRoute.route("/").get(getAllEmployees)
 
-empRoute.route("/createNew").post(authProtector, createEmployee)
+empRoute.route("/createNew").post(createEmployee)
 
 empRoute.route("/updateEmp/:empId").put(authProtector, updateEmployeeDetails)
 
