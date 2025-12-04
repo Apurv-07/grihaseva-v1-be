@@ -31,11 +31,12 @@ export const getPopularCategories = async (req, res) => {
         $project: {
           _id: 0,
           categoryId: "$_id",
-          categoryName: "$name",
+          name: "$name",
           image: "$image",
           startingFrom: "$startingFrom",
           description: "$description",
           priceDescription: "$priceDescription",
+          parentService: "$parentService",
           totalOrders: 1
         }
       },
