@@ -292,7 +292,7 @@ export const createOrder = async (req, res) => {
       .status(400)
       .json({ message: "Please enter either email or phone number" });
   }
-  if((!addressLine1 && !addressLine2) || !city || !landmark || !pinCode){
+  if ((!addressLine1 && !addressLine2) || !city || !landmark || !pinCode) {
     return res.status(400).json({ message: "Please enter complete address" });
   }
   try {
@@ -308,46 +308,34 @@ export const createOrder = async (req, res) => {
     ) {
       return res.status(500).json({ message: "Order exists" });
     }
-    let createOrder;
+    let orderData = {
+      name,
+      email,
+      phone,
+      issue,
+      serviceCategory: category,
+      status: "Pending",
+      address: {
+        addressLine1,
+        addressLine2,
+        landmark,
+        city,
+        state,
+        pinCode,
+      },
+    };
+
     if (deliveryTime) {
-      createOrder = new order({
-        name,
-        email,
-        phone,
-        issue,
-        serviceCategory: category,
-        parentService: service,
-        deliveryTime: new Date(deliveryTime),
-        status: "Pending",
-        address: {
-          addressLine1,
-          addressLine2,
-          landmark,
-          city,
-          state,
-          pinCode,
-        },
-      });
-    } else {
-      createOrder = new order({
-        name,
-        email,
-        phone,
-        issue,
-        serviceCategory: category,
-        parentService: service,
-        status: "Pending",
-        address: {
-          addressLine1,
-          addressLine2,
-          landmark,
-          city,
-          state,
-          pinCode,
-        },
-      });
+      orderData.deliveryTime = new Date(deliveryTime);
     }
-    const created=await createOrder.save();
+
+    if (service) {
+      orderData.parentService = service;
+    }
+
+    const createOrder = new order(orderData);
+
+    const created = await createOrder.save();
     notifyOrderDetails(createOrder);
     return res.status(201).json({ message: "Order successfully created", orderId: created._id });
   } catch (err) {
