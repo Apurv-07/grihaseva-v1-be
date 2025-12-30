@@ -1,9 +1,11 @@
 import { Router } from "express"
-import { changeOrderStatus, createOrder, deleteOrder, getAllOrders, getOrderById, getUsersOrderList, unAssignOrder, updateOrderDetails } from "../contollers/orderController.js";
+import { changeOrderStatus, createOrder, deleteOrder, getAllOrders, getOrderById, getOrderByPhone, getUsersOrderList, unAssignOrder, updateOrderDetails } from "../contollers/orderController.js";
 import authProtector from "../middlewares/authProtector.js";
 const orderRouter=Router();
 
 orderRouter.route("/").get(authProtector, getAllOrders)
+
+orderRouter.route("/getOrderByPhoneOrEmail").post(getOrderByPhone)
 
 orderRouter.route("/getOrdersForUser").post(getUsersOrderList)
 

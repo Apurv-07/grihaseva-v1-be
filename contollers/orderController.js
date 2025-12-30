@@ -87,6 +87,18 @@ export const getOrderById = async (req, res) => {
   }
 };
 
+export const getOrderByPhone = async (req, res) => {
+  const { phoneOrEmail } = req.body;
+  try {
+    const orderList = await order.find({ $or: [{ phone: phoneOrEmail }, { email: phoneOrEmail }] });
+    return res
+      .status(200)
+      .json({ message: "Successful", item: orderList });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
 export const updateOrderDetails = async (req, res) => {
   const orderId = req.params.id;
   const { category, selectedCategory, service, empId, ...body } = req.body;
@@ -297,7 +309,7 @@ export const createOrder = async (req, res) => {
   }
   try {
     const existingOrder = await order
-      .findOne({ phone })
+      .findOne({  $or: [{ phone }, { email }] })
       .sort({ createdAt: -1 });
     if (
       existingOrder &&
@@ -337,7 +349,7 @@ export const createOrder = async (req, res) => {
 
     const created = await createOrder.save();
     notifyOrderDetails(createOrder);
-    return res.status(201).json({ message: "Order successfully created", orderId: created._id });
+    return res.status(201).json({ message: "Order successfully created, our team will be in touch with you as soon as possible!", orderId: created._id });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: err.message });
