@@ -31,11 +31,6 @@ const orderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Service",
   },
-  bookTime: {
-    type: Date,
-    default: Date.now,
-    required: [true, "Booking time is required"],
-  },
   deliveryTime: {
     type: Date,
     required: false,
@@ -90,7 +85,7 @@ const orderSchema = new mongoose.Schema({
       match: [/^\d{6}$/, "Pin code must be 6 digits"],
     }
   }
-}, { timeStamp: true });
+}, { timestamps: true });
 
 const order = mongoose.model("Order", orderSchema);
 export default order;

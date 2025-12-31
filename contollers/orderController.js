@@ -90,7 +90,9 @@ export const getOrderById = async (req, res) => {
 export const getOrderByPhone = async (req, res) => {
   const { phoneOrEmail } = req.body;
   try {
-    const orderList = await order.find({ $or: [{ phone: phoneOrEmail }, { email: phoneOrEmail }] });
+    const orderList = await order.find({ $or: [{ phone: phoneOrEmail }, { email: phoneOrEmail }] }).populate("serviceCategory", "name")
+      .populate("addressedBy", "fname lname")
+      .populate("amount", "description tax total discount subTotal");
     return res
       .status(200)
       .json({ message: "Successful", item: orderList });
